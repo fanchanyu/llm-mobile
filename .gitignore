@@ -22,3 +22,4 @@ yarn-error.*
 /android
 architecture-flow.excalidraw
 llm-mobile-mockup.html
+.vscode/
