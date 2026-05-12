@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title data-lang-zh="LLM-Mobile · V2 延伸架構拓樸圖" data-lang-en="LLM-Mobile · V2 Extended Architecture Topology">LLM-Mobile · V2 延伸架構拓樸圖</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #F0F4F8;
+  color: #1e293b;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.container { max-width: 1100px; width: 100%; }
+.header { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+.pulse { width: 10px; height: 10px; background: #6366f1; border-radius: 50%; animation: pulse 2s infinite; }
+@keyframes pulse { 0% { opacity: 1; box-shadow: 0 0 0 0 rgba(99,102,241,0.4); } 70% { opacity: 1; box-shadow: 0 0 0 10px rgba(99,102,241,0); } 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(99,102,241,0); } }
+h1 { font-size: 20px; font-weight: 700; color: #0f172a; letter-spacing: -0.5px; }
+.subtitle { color: #64748b; font-size: 11px; margin-top: -6px; margin-bottom: 16px; display: flex; gap: 16px; flex-wrap: wrap; }
+.subtitle span { color: #475569; }
+.diagram-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; position: relative; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+svg { width: 100%; height: auto; display: block; }
+.grid { background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M 40 0 L 0 0 0 40' fill='none' stroke='%23e2e8f0' stroke-width='0.5'/%3E%3C/svg%3E"); }
+.layers { display: flex; gap: 16px; margin-top: 20px; flex-wrap: wrap; }
+.card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px 20px; flex: 1; min-width: 220px; box-shadow: 0 1px 2px rgba(0,0,0,0.03); }
+.card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.card-dot { width: 8px; height: 8px; border-radius: 50%; }
+.card h3 { font-size: 12px; font-weight: 600; color: #0f172a; }
+.card ul { list-style: none; font-size: 10px; color: #475569; line-height: 2; }
+.card li { display: flex; align-items: center; gap: 6px; }
+.card li::before { content: '▹'; color: #94a3b8; }
+.footer { text-align: center; color: #94a3b8; font-size: 9px; margin-top: 20px; padding: 14px; border-top: 1px solid #e2e8f0; }
+.cyan { color: #14b8a6; background: #14b8a6; }
+.emerald { color: #10b981; background: #10b981; }
+.violet { color: #8b5cf6; background: #8b5cf6; }
+.amber { color: #f59e0b; background: #f59e0b; }
+.rose { color: #f43f5e; background: #f43f5e; }
+.orange { color: #f97316; background: #f97316; }
+.blue { color: #6366f1; background: #6366f1; }
+.purple { color: #a855f7; background: #a855f7; }
+
+.mockup-section { margin-top: 24px; }
+.mockup-section h2 { font-size: 16px; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.mockup-grid { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+
+.phone-frame { width: 240px; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid #e2e8f0; }
+.phone-notch { height: 26px; background: #1e293b; display: flex; align-items: center; justify-content: center; position: relative; }
+.phone-notch .time { color: white; font-size: 10px; font-weight: 600; }
+.screen-content { padding: 8px; }
+.screen-content h4 { font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; text-align: center; }
+
+/* Dashboard mockup */
+.screen-dash .kpi-row { display: flex; gap: 4px; margin-bottom: 6px; }
+.screen-dash .kpi-item { flex:1; background:#f8fafc; border-radius:8px; padding:6px 4px; text-align:center; }
+.screen-dash .kpi-item .num { font-size:13px; font-weight:700; }
+.screen-dash .kpi-item .lbl { font-size:8px; color:#64748b; }
+.screen-dash .kpi-item:nth-child(1) .num { color:#10b981; }
+.screen-dash .kpi-item:nth-child(2) .num { color:#6366f1; }
+.screen-dash .kpi-item:nth-child(3) .num { color:#f97316; }
+.screen-dash .demo-banner { background:#ffedd5; border:1px solid #fbbf24; border-radius:6px; font-size:7px; padding:3px 6px; text-align:center; color:#92400e; margin-bottom:6px; }
+.screen-dash .qa-grid { display:grid; grid-template-columns:1fr 1fr; gap:4px; margin-bottom:6px; }
+.screen-dash .qa-btn { background:#f8fafc; border-radius:8px; padding:6px 4px; text-align:center; border:1px solid #e2e8f0; }
+.screen-dash .qa-btn .icon { font-size:12px; margin-bottom:2px; }
+.screen-dash .qa-btn .label { font-size:7px; color:#475569; font-weight:500; }
+.screen-dash .event-stream { background:#f8fafc; border-radius:8px; padding:5px; border:1px solid #e2e8f0; }
+.screen-dash .event-stream .ev-header { font-size:8px; font-weight:600; margin-bottom:3px; }
+.screen-dash .event-stream .ev-item { font-size:7px; padding:2px 0; border-bottom:1px solid #f1f5f9; }
+.screen-dash .event-stream .ev-item .dot { display:inline-block; width:5px; height:5px; border-radius:50%; margin-right:3px; }
+.screen-dash .event-stream .ev-item .dot.green { background:#10b981; }
+.screen-dash .event-stream .ev-item .dot.red { background:#ef4444; }
+
+/* Bottom nav */
+.bottom-nav { display:flex; background:white; border-top:1px solid #e2e8f0; padding:3px 0; }
+.bottom-nav .nav-item { flex:1; text-align:center; padding:3px 0; font-size:8px; color:#94a3b8; }
+.bottom-nav .nav-item.active { color:#6366f1; }
+.bottom-nav .nav-item .icon { font-size:12px; display:block; }
+.bottom-nav .nav-item .label { font-size:7px; margin-top:1px; display:block; }
+
+/* Login */
+.screen-login { text-align:center; padding-top:16px; }
+.screen-login .logo { font-size:20px; font-weight:800; color:#6366f1; margin-bottom:4px; }
+.screen-login .app-name { font-size:11px; font-weight:600; margin-bottom:14px; }
+.screen-login .input-field { background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:6px 8px; margin-bottom:6px; text-align:left; font-size:9px; color:#64748b; }
+.screen-login .btn { background:#6366f1; color:white; border-radius:8px; padding:7px; font-size:10px; font-weight:600; margin-top:6px; }
+.screen-login .server-info { font-size:7px; color:#94a3b8; margin-top:6px; }
+
+/* Inventory */
+.screen-inv .search-bar { background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:5px 7px; margin-bottom:5px; font-size:8px; color:#64748b; }
+.screen-inv .inv-item { display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px solid #f1f5f9; }
+.screen-inv .inv-item .name { font-size:9px; font-weight:500; }
+.screen-inv .inv-item .qty { font-size:8px; }
+.screen-inv .inv-item .qty.low { color:#ef4444; }
+
+/* Approvals */
+.screen-approx .appr-item { background:#f8fafc; border-radius:8px; padding:6px; margin-bottom:5px; border:1px solid #e2e8f0; }
+.screen-approx .appr-item .title { font-size:9px; font-weight:600; }
+.screen-approx .appr-item .desc { font-size:7px; color:#64748b; margin:2px 0; }
+.screen-approx .appr-item .actions { display:flex; gap:4px; margin-top:3px; }
+.screen-approx .appr-item .actions .btn-appr { background:#10b981; color:white; border-radius:4px; padding:2px 7px; font-size:7px; }
+.screen-approx .appr-item .actions .btn-rej { background:#fee2e2; color:#dc2626; border-radius:4px; padding:2px 7px; font-size:7px; }
+
+/* AI Chat */
+.screen-chat .chat-msg { margin-bottom:5px; }
+.screen-chat .chat-msg .bubble { display:inline-block; background:#f1f5f9; border-radius:8px; padding:5px 7px; font-size:8px; max-width:80%; }
+.screen-chat .chat-msg.user { text-align:right; }
+.screen-chat .chat-msg.user .bubble { background:#6366f1; color:white; }
+.screen-chat .chat-input { display:flex; gap:4px; margin-top:6px; }
+.screen-chat .chat-input .field { flex:1; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:5px 7px; font-size:8px; }
+.screen-chat .chat-input .mic { background:#6366f1; color:white; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; font-size:10px; }
+
+/* Notifications */
+.screen-notif .notif-item { display:flex; gap:5px; padding:5px 0; border-bottom:1px solid #f1f5f9; }
+.screen-notif .notif-item .icon-circle { width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:9px; flex-shrink:0; }
+.screen-notif .notif-item .content { flex:1; }
+.screen-notif .notif-item .content .title { font-size:8px; font-weight:500; }
+.screen-notif .notif-item .content .time { font-size:7px; color:#94a3b8; }
+.screen-notif .notif-item.unread { background:#f0f0ff; border-radius:6px; padding:5px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="header">
+  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;flex:1">
+    <div class="pulse"></div>
+    <h1 data-lang-zh="LLM-ERP V2 → LLM-Mobile · 延伸架構拓樸圖" data-lang-en="LLM-ERP V2 → LLM-Mobile · Extended Architecture Topology">LLM-ERP V2 → LLM-Mobile · 延伸架構拓樸圖</h1>
+    <div style="display:flex;border:2px solid #cbd5e1;border-radius:8px;overflow:hidden;margin-left:auto">
+      <button onclick="switchLang('zh')" id="btn-zh" style="padding:5px 14px;font-size:12px;font-weight:500;cursor:pointer;border:none;background:#0D9488;color:white;font-family:'Inter',sans-serif;transition:all .2s">中文</button>
+      <button onclick="switchLang('en')" id="btn-en" style="padding:5px 14px;font-size:12px;font-weight:500;cursor:pointer;border:none;background:transparent;color:#64748b;font-family:'Inter',sans-serif;transition:all .2s">EN</button>
+    </div>
+  </div>
+</div>
+<div class="subtitle">
+  <span>v2.0+mobile</span>
+  <span data-lang-zh="34 資料表 · 83 APIs · 37 Tools · 20 約束 · 12 事件 · 7 角色" data-lang-en="34 Tables · 83 APIs · 37 Tools · 20 Constraints · 12 Events · 7 Roles">34 資料表 · 83 APIs · 37 Tools · 20 約束 · 12 事件 · 7 角色</span>
+  <span>Python FastAPI + React Native Expo + React TS</span>
+</div>
+
+<div class="diagram-card">
+<svg viewBox="0 0 1040 980" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="g" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#e2e8f0" stroke-width="0.5"/>
+    </pattern>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#94a3b8"/>
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#6366f1"/>
+    </marker>
+    <marker id="arrow-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#f97316"/>
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#10b981"/>
+    </marker>
+    <marker id="arrow-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#a855f7"/>
+    </marker>
+    <linearGradient id="bg-mobile" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#10b981" stop-opacity="0.06"/></linearGradient>
+    <linearGradient id="bg-frontend" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#6366f1" stop-opacity="0.06"/></linearGradient>
+    <linearGradient id="bg-backend" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#14b8a6" stop-opacity="0.06"/></linearGradient>
+    <linearGradient id="bg-event" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f97316" stop-opacity="0.06"/></linearGradient>
+    <linearGradient id="bg-data" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.06"/></linearGradient>
+    <linearGradient id="bg-mesh" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#a855f7" stop-opacity="0.06"/></linearGradient>
+    <filter id="shadow"><feDropShadow dx="0" dy="1" stdDeviation="1" flood-color="#000" flood-opacity="0.06"/></filter>
+  </defs>
+
+  <rect width="1040" height="980" fill="url(#g)"/>
+
+  <!-- ═══ Layer 5 (Top): MOBILE ═══ -->
+  <rect x="20" y="10" width="1000" height="70" rx="10" fill="none" stroke="#10b981" stroke-width="1" stroke-dasharray="6,3" opacity="0.4"/>
+  <text x="30" y="26" fill="#10b981" font-size="9" font-weight="600" opacity="0.8">MOBILE LAYER (React Native · Expo) — LLM-Mobile</text>
+
+  <!-- Mobile apps -->
+  <rect x="40" y="36" width="140" height="34" rx="6" fill="#ffffff" stroke="#10b981" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="110" y="52" text-anchor="middle" fill="#0f172a" font-size="9" font-weight="600">📱 Mobile</text>
+  <text x="110" y="64" text-anchor="middle" fill="#64748b" font-size="6">Dashboard / Chat</text>
+
+  <rect x="200" y="36" width="140" height="34" rx="6" fill="#ffffff" stroke="#10b981" stroke-width="1" opacity="0.9" filter="url(#shadow)"/>
+  <text x="270" y="52" text-anchor="middle" fill="#0f172a" font-size="8">Inventory Query</text>
+  <text x="270" y="64" text-anchor="middle" fill="#64748b" font-size="6">Approvals</text>
+
+  <rect x="360" y="36" width="140" height="34" rx="6" fill="#ffffff" stroke="#10b981" stroke-width="1" opacity="0.9" filter="url(#shadow)"/>
+  <text x="430" y="52" text-anchor="middle" fill="#0f172a" font-size="8">Mesh Monitor</text>
+  <text x="430" y="64" text-anchor="middle" fill="#64748b" font-size="6">AI Chat</text>
+
+  <rect x="520" y="36" width="140" height="34" rx="6" fill="#ffffff" stroke="#10b981" stroke-width="1" opacity="0.9" filter="url(#shadow)"/>
+  <text x="590" y="52" text-anchor="middle" fill="#0f172a" font-size="8">Notifications</text>
+  <text x="590" y="64" text-anchor="middle" fill="#64748b" font-size="6">Profile</text>
+
+  <!-- ═══ Arrow: Mobile → API ═══ -->
+  <line x1="300" y1="80" x2="300" y2="110" stroke="#6366f1" stroke-width="1.5" marker-end="url(#arrow-blue)"/>
+  <line x1="420" y1="80" x2="420" y2="110" stroke="#6366f1" stroke-width="1.5" marker-end="url(#arrow-blue)"/>
+  <text x="290" y="98" fill="#6366f1" font-size="7" font-weight="500">REST API</text>
+
+  <!-- ═══ Layer 4: API GATEWAY ═══ -->
+  <rect x="20" y="100" width="1000" height="70" rx="10" fill="none" stroke="#6366f1" stroke-width="1" stroke-dasharray="6,3" opacity="0.4"/>
+  <text x="30" y="116" fill="#6366f1" font-size="9" font-weight="600" opacity="0.8">API GATEWAY (FastAPI · Port 8000)</text>
+
+  <rect x="40" y="126" width="280" height="34" rx="6" fill="#ffffff" stroke="#6366f1" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="180" y="142" text-anchor="middle" fill="#0f172a" font-size="9" font-weight="600">🔗 REST API (83 Endpoints)</text>
+  <text x="180" y="154" text-anchor="middle" fill="#64748b" font-size="6">CRUD · 7 Domains · X-Device Header</text>
+
+  <rect x="350" y="126" width="280" height="34" rx="6" fill="#ffffff" stroke="#ef4444" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="490" y="142" text-anchor="middle" fill="#ef4444" font-size="9" font-weight="600">📡 SSE Event Stream</text>
+  <text x="490" y="154" text-anchor="middle" fill="#64748b" font-size="6">12 Events · Role Filter · Real-time</text>
+
+  <rect x="660" y="126" width="300" height="34" rx="6" fill="#ffffff" stroke="#f59e0b" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="810" y="142" text-anchor="middle" fill="#f59e0b" font-size="9" font-weight="600">🔐 JWT Auth + RBAC</text>
+  <text x="810" y="154" text-anchor="middle" fill="#64748b" font-size="6">7 Roles · 65 Permissions · Token Auth</text>
+
+  <!-- Arrow: API → Desktop -->
+  <line x1="800" y1="170" x2="800" y2="200" stroke="#6366f1" stroke-width="1.5" marker-end="url(#arrow-blue)"/>
+  <line x1="690" y1="170" x2="690" y2="200" stroke="#6366f1" stroke-width="1.5" marker-end="url(#arrow-blue)"/>
+
+  <!-- ═══ Layer 3 (original L1): FRONTEND (Desktop) ═══ -->
+  <rect x="20" y="190" width="1000" height="140" rx="10" fill="none" stroke="#6366f1" stroke-width="1" stroke-dasharray="6,3" opacity="0.4"/>
+  <text x="30" y="206" fill="#6366f1" font-size="9" font-weight="600" opacity="0.8">FRONTEND LAYER (React + TypeScript + Vite) — Desktop</text>
+
+  <!-- War Room -->
+  <rect x="40" y="218" width="180" height="40" rx="6" fill="#ffffff" stroke="#6366f1" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="130" y="236" text-anchor="middle" fill="#0f172a" font-size="9" font-weight="600">🏭 War Room</text>
+  <text x="130" y="250" text-anchor="middle" fill="#64748b" font-size="7">7 Roles · 17 Widgets</text>
+
+  <!-- Chat -->
+  <rect x="240" y="218" width="180" height="40" rx="6" fill="#ffffff" stroke="#6366f1" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="330" y="236" text-anchor="middle" fill="#0f172a" font-size="9" font-weight="600">💬 LLM Chat</text>
+  <text x="330" y="250" text-anchor="middle" fill="#64748b" font-size="7">DeepSeek / Ollama</text>
+
+  <!-- Interactive Diagram -->
+  <rect x="440" y="218" width="180" height="40" rx="6" fill="#ffffff" stroke="#6366f1" stroke-width="1" filter="url(#shadow)"/>
+  <text x="530" y="236" text-anchor="middle" fill="#0f172a" font-size="8">📊 關聯架構圖</text>
+  <text x="530" y="250" text-anchor="middle" fill="#64748b" font-size="7">8 Nodes · Clickable</text>
+
+  <!-- i18n -->
+  <rect x="640" y="218" width="120" height="40" rx="6" fill="#ffffff" stroke="#6366f1" stroke-width="1" opacity="0.85" filter="url(#shadow)"/>
+  <text x="700" y="236" text-anchor="middle" fill="#0f172a" font-size="8">🌐 中 / EN</text>
+  <text x="700" y="250" text-anchor="middle" fill="#64748b" font-size="7">i18n 雙語</text>
+
+  <!-- Widget bar -->
+  <rect x="780" y="218" width="200" height="40" rx="6" fill="#ffffff" stroke="#6366f1" stroke-width="1" opacity="0.85" filter="url(#shadow)"/>
+  <text x="880" y="236" text-anchor="middle" fill="#0f172a" font-size="8">📡 事件流</text>
+  <text x="880" y="250" text-anchor="middle" fill="#64748b" font-size="7">KPI / Alert / Events</text>
+
+  <!-- KPI / Alert / Event bars -->
+  <rect x="40" y="272" width="140" height="38" rx="6" fill="#ffffff" stroke="#6366f1" stroke-width="0.8" opacity="0.8"/>
+  <text x="110" y="292" text-anchor="middle" fill="#475569" font-size="8">📈 KPI 聚合</text>
+  <text x="110" y="304" text-anchor="middle" fill="#94a3b8" font-size="6">36 指標</text>
+
+  <rect x="200" y="272" width="140" height="38" rx="6" fill="#ffffff" stroke="#f43f5e" stroke-width="0.8" opacity="0.8"/>
+  <text x="270" y="292" text-anchor="middle" fill="#475569" font-size="8">⚠️ Alert Bar</text>
+  <text x="270" y="304" text-anchor="middle" fill="#94a3b8" font-size="6">DB 掃描</text>
+
+  <rect x="360" y="272" width="140" height="38" rx="6" fill="#ffffff" stroke="#6366f1" stroke-width="0.8" opacity="0.8"/>
+  <text x="430" y="292" text-anchor="middle" fill="#475569" font-size="8">🔔 通知</text>
+  <text x="430" y="304" text-anchor="middle" fill="#94a3b8" font-size="6">即時推播</text>
+
+  <!-- Arrows Frontend → Backend -->
+  <line x1="130" y1="330" x2="130" y2="360" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="330" y1="330" x2="330" y2="360" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- ═══ Layer 2 (original L2): BACKEND ═══ -->
+  <rect x="20" y="350" width="1000" height="230" rx="10" fill="none" stroke="#14b8a6" stroke-width="1" stroke-dasharray="6,3" opacity="0.4"/>
+  <text x="30" y="366" fill="#14b8a6" font-size="9" font-weight="600" opacity="0.8">BACKEND LAYER (FastAPI + SQLAlchemy Async)</text>
+
+  <!-- Domain Services - Row 1 -->
+  <rect x="40" y="378" width="130" height="48" rx="6" fill="#ffffff" stroke="#14b8a6" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="105" y="396" text-anchor="middle" fill="#0f172a" font-size="9" font-weight="600">📦 庫存</text>
+  <text x="105" y="410" text-anchor="middle" fill="#64748b" font-size="6">Parts · Stock</text>
+  <text x="105" y="420" text-anchor="middle" fill="#14b8a6" font-size="5">4 constraints</text>
+
+  <rect x="185" y="378" width="130" height="48" rx="6" fill="#ffffff" stroke="#14b8a6" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="250" y="396" text-anchor="middle" fill="#0f172a" font-size="9" font-weight="600">📋 採購</text>
+  <text x="250" y="410" text-anchor="middle" fill="#64748b" font-size="6">Suppliers · POs</text>
+  <text x="250" y="420" text-anchor="middle" fill="#14b8a6" font-size="5">4 constraints</text>
+
+  <rect x="330" y="378" width="130" height="48" rx="6" fill="#ffffff" stroke="#14b8a6" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="395" y="396" text-anchor="middle" fill="#0f172a" font-size="9" font-weight="600">📐 BOM</text>
+  <text x="395" y="410" text-anchor="middle" fill="#64748b" font-size="6">BOM Tree</text>
+  <text x="395" y="420" text-anchor="middle" fill="#14b8a6" font-size="5">2 constraints</text>
+
+  <rect x="475" y="378" width="130" height="48" rx="6" fill="#ffffff" stroke="#14b8a6" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="540" y="396" text-anchor="middle" fill="#0f172a" font-size="9" font-weight="600">⚙️ 派工</text>
+  <text x="540" y="410" text-anchor="middle" fill="#64748b" font-size="6">WOs · Schedules</text>
+  <text x="540" y="420" text-anchor="middle" fill="#14b8a6" font-size="5">3 constraints</text>
+
+  <rect x="620" y="378" width="130" height="48" rx="6" fill="#ffffff" stroke="#14b8a6" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="685" y="396" text-anchor="middle" fill="#0f172a" font-size="9" font-weight="600">✅ 品質</text>
+  <text x="685" y="410" text-anchor="middle" fill="#64748b" font-size="6">Insp · NC · CAPA</text>
+  <text x="685" y="420" text-anchor="middle" fill="#14b8a6" font-size="5">3 constraints</text>
+
+  <rect x="765" y="378" width="200" height="48" rx="6" fill="#ffffff" stroke="#14b8a6" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="865" y="396" text-anchor="middle" fill="#0f172a" font-size="9" font-weight="600">💰 會計</text>
+  <text x="865" y="410" text-anchor="middle" fill="#64748b" font-size="6">Journals · AR/AP</text>
+  <text x="865" y="420" text-anchor="middle" fill="#14b8a6" font-size="5">4 constraints</text>
+
+  <!-- Bottom row: Shared Services -->
+  <rect x="40" y="440" width="300" height="40" rx="6" fill="#ffffff" stroke="#f59e0b" stroke-width="1" filter="url(#shadow)"/>
+  <text x="190" y="460" text-anchor="middle" fill="#f59e0b" font-size="9" font-weight="600">📊 Dashboard KPI / Alert 聚合 API</text>
+  <text x="190" y="474" text-anchor="middle" fill="#64748b" font-size="6">跨 7 模組 · 即時 DB 查詢</text>
+
+  <rect x="360" y="440" width="240" height="40" rx="6" fill="#ffffff" stroke="#f43f5e" stroke-width="1" filter="url(#shadow)"/>
+  <text x="480" y="460" text-anchor="middle" fill="#f43f5e" font-size="9" font-weight="600">🔒 約束檢查器</text>
+  <text x="480" y="474" text-anchor="middle" fill="#64748b" font-size="6">20 Business Rules · 6 Domains</text>
+
+  <rect x="620" y="440" width="200" height="40" rx="6" fill="#ffffff" stroke="#14b8a6" stroke-width="1" opacity="0.85" filter="url(#shadow)"/>
+  <text x="720" y="460" text-anchor="middle" fill="#0f172a" font-size="8">💬 LLM Chat API</text>
+  <text x="720" y="474" text-anchor="middle" fill="#64748b" font-size="6">Intent → Domain Agent</text>
+
+  <rect x="840" y="440" width="140" height="40" rx="6" fill="#ffffff" stroke="#8b5cf6" stroke-width="1" opacity="0.85" filter="url(#shadow)"/>
+  <text x="910" y="460" text-anchor="middle" fill="#8b5cf6" font-size="8">🔐 Auth API</text>
+  <text x="910" y="474" text-anchor="middle" fill="#64748b" font-size="6">Login · RBAC</text>
+
+  <!-- Arrow: Backend → Event -->
+  <line x1="130" y1="580" x2="130" y2="610" stroke="#f97316" stroke-width="1.5" marker-end="url(#arrow-orange)"/>
+  <line x1="330" y1="580" x2="330" y2="610" stroke="#f97316" stroke-width="1.5" marker-end="url(#arrow-orange)"/>
+
+  <!-- ═══ Layer 1 (original L3): EVENT ENGINE & NOTIFICATIONS ═══ -->
+  <rect x="20" y="600" width="1000" height="90" rx="10" fill="none" stroke="#f97316" stroke-width="1" stroke-dasharray="6,3" opacity="0.4"/>
+  <text x="30" y="616" fill="#f97316" font-size="9" font-weight="600" opacity="0.8">EVENT ENGINE &amp; NOTIFICATION LAYER</text>
+
+  <rect x="40" y="628" width="300" height="48" rx="6" fill="#ffffff" stroke="#f97316" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="190" y="648" text-anchor="middle" fill="#f97316" font-size="9" font-weight="600">⚡ Event Bus (Pub/Sub)</text>
+  <text x="190" y="664" text-anchor="middle" fill="#64748b" font-size="6">12 Domain Events · Broadcast → SSE</text>
+
+  <rect x="370" y="628" width="300" height="48" rx="6" fill="#ffffff" stroke="#f97316" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="520" y="648" text-anchor="middle" fill="#f97316" font-size="9" font-weight="600">🔔 SSE Broadcaster</text>
+  <text x="520" y="664" text-anchor="middle" fill="#64748b" font-size="6">Role-based Filter · Mobile + Desktop</text>
+
+  <rect x="700" y="628" width="260" height="48" rx="6" fill="#ffffff" stroke="#f97316" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="830" y="648" text-anchor="middle" fill="#f97316" font-size="9" font-weight="600">👤 通知路由</text>
+  <text x="830" y="664" text-anchor="middle" fill="#64748b" font-size="6">7 Roles · Event → Role Mapping</text>
+
+  <!-- Arrow: Event → Data -->
+  <line x1="130" y1="690" x2="130" y2="720" stroke="#8b5cf6" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- ═══ Layer 0 (original L4): DATA ═══ -->
+  <rect x="20" y="710" width="1000" height="110" rx="10" fill="none" stroke="#8b5cf6" stroke-width="1" stroke-dasharray="6,3" opacity="0.4"/>
+  <text x="30" y="726" fill="#8b5cf6" font-size="9" font-weight="600" opacity="0.8">DATA LAYER (SQLAlchemy ORM + Audit)</text>
+
+  <rect x="50" y="738" width="130" height="64" rx="6" fill="#ffffff" stroke="#8b5cf6" stroke-width="1" filter="url(#shadow)"/>
+  <text x="115" y="756" text-anchor="middle" fill="#8b5cf6" font-size="8" font-weight="600">📦 Inventory</text>
+  <text x="115" y="768" text-anchor="middle" fill="#64748b" font-size="6">parts / inventory</text>
+  <text x="115" y="780" text-anchor="middle" fill="#64748b" font-size="6">inv_transactions</text>
+  <text x="115" y="792" text-anchor="middle" fill="#64748b" font-size="6">audit_logs</text>
+
+  <rect x="195" y="738" width="130" height="64" rx="6" fill="#ffffff" stroke="#8b5cf6" stroke-width="1" filter="url(#shadow)"/>
+  <text x="260" y="756" text-anchor="middle" fill="#8b5cf6" font-size="8" font-weight="600">📋 Purchase</text>
+  <text x="260" y="768" text-anchor="middle" fill="#64748b" font-size="6">suppliers</text>
+  <text x="260" y="780" text-anchor="middle" fill="#64748b" font-size="6">purchase_orders</text>
+  <text x="260" y="792" text-anchor="middle" fill="#64748b" font-size="6">po_items</text>
+
+  <rect x="340" y="738" width="130" height="64" rx="6" fill="#ffffff" stroke="#8b5cf6" stroke-width="1" filter="url(#shadow)"/>
+  <text x="405" y="756" text-anchor="middle" fill="#8b5cf6" font-size="8" font-weight="600">📐 BOM</text>
+  <text x="405" y="768" text-anchor="middle" fill="#64748b" font-size="6">products</text>
+  <text x="405" y="780" text-anchor="middle" fill="#64748b" font-size="6">bom_items</text>
+
+  <rect x="485" y="738" width="130" height="64" rx="6" fill="#ffffff" stroke="#8b5cf6" stroke-width="1" filter="url(#shadow)"/>
+  <text x="550" y="756" text-anchor="middle" fill="#8b5cf6" font-size="8" font-weight="600">⚙️ Dispatch</text>
+  <text x="550" y="768" text-anchor="middle" fill="#64748b" font-size="6">work_centers</text>
+  <text x="550" y="780" text-anchor="middle" fill="#64748b" font-size="6">prod_orders / ops</text>
+  <text x="550" y="792" text-anchor="middle" fill="#64748b" font-size="6">dispatch_logs</text>
+
+  <rect x="630" y="738" width="130" height="64" rx="6" fill="#ffffff" stroke="#8b5cf6" stroke-width="1" filter="url(#shadow)"/>
+  <text x="695" y="756" text-anchor="middle" fill="#8b5cf6" font-size="8" font-weight="600">✅ Quality</text>
+  <text x="695" y="768" text-anchor="middle" fill="#64748b" font-size="6">inspection_orders</text>
+  <text x="695" y="780" text-anchor="middle" fill="#64748b" font-size="6">non_conformances</text>
+  <text x="695" y="792" text-anchor="middle" fill="#64748b" font-size="6">capa_records</text>
+
+  <rect x="775" y="738" width="200" height="64" rx="6" fill="#ffffff" stroke="#8b5cf6" stroke-width="1" filter="url(#shadow)"/>
+  <text x="875" y="756" text-anchor="middle" fill="#8b5cf6" font-size="8" font-weight="600">💰 Accounting</text>
+  <text x="875" y="768" text-anchor="middle" fill="#64748b" font-size="6">accounts / journal_entries</text>
+  <text x="875" y="780" text-anchor="middle" fill="#64748b" font-size="6">journal_lines / ar</text>
+  <text x="875" y="792" text-anchor="middle" fill="#64748b" font-size="6">month_end_closes</text>
+
+  <!-- DB bottom bar -->
+  <rect x="50" y="806" width="925" height="26" rx="6" fill="#ffffff" stroke="#8b5cf6" stroke-width="0.5" opacity="0.8"/>
+  <text x="512" y="822" text-anchor="middle" fill="#475569" font-size="7">SQLAlchemy ORM · SQLite (dev) / PostgreSQL (prod) · 34 Tables · Audit Logs</text>
+
+  <!-- Arrow: Data → Mesh -->
+  <line x1="300" y1="820" x2="300" y2="845" stroke="#a855f7" stroke-width="1.5" marker-end="url(#arrow-purple)"/>
+  <line x1="520" y1="820" x2="520" y2="845" stroke="#a855f7" stroke-width="1.5" marker-end="url(#arrow-purple)"/>
+
+  <!-- ═══ Layer -1 (NEW): LLM-MESH ═══ -->
+  <rect x="20" y="840" width="1000" height="80" rx="10" fill="none" stroke="#a855f7" stroke-width="1" stroke-dasharray="6,3" opacity="0.5"/>
+  <text x="30" y="856" fill="#a855f7" font-size="9" font-weight="600" opacity="0.8">LLM-MESH NETWORK (Distributed Factories · CPU Qwen · SSL VPN)</text>
+
+  <rect x="50" y="866" width="160" height="40" rx="6" fill="#ffffff" stroke="#a855f7" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="130" y="886" text-anchor="middle" fill="#a855f7" font-size="9" font-weight="600">🏭 Site A :8001</text>
+  <text x="130" y="900" text-anchor="middle" fill="#64748b" font-size="6">Qwen + Hermes Agent</text>
+
+  <rect x="240" y="866" width="160" height="40" rx="6" fill="#ffffff" stroke="#a855f7" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="320" y="886" text-anchor="middle" fill="#a855f7" font-size="9" font-weight="600">🏭 Site B :8002</text>
+  <text x="320" y="900" text-anchor="middle" fill="#64748b" font-size="6">Qwen + Hermes Agent</text>
+
+  <rect x="430" y="866" width="160" height="40" rx="6" fill="#ffffff" stroke="#a855f7" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="510" y="886" text-anchor="middle" fill="#a855f7" font-size="9" font-weight="600">🏭 Site C :8003</text>
+  <text x="510" y="900" text-anchor="middle" fill="#64748b" font-size="6">Qwen + Hermes Agent</text>
+
+  <!-- Mesh interconnects -->
+  <line x1="210" y1="898" x2="240" y2="880" stroke="#a855f7" stroke-width="1" stroke-dasharray="3,2" opacity="0.6"/>
+  <line x1="400" y1="880" x2="430" y2="898" stroke="#a855f7" stroke-width="1" stroke-dasharray="3,2" opacity="0.6"/>
+
+  <!-- SSL VPN label -->
+  <rect x="650" y="866" width="310" height="40" rx="6" fill="#ffffff" stroke="#a855f7" stroke-width="1" opacity="0.85"/>
+  <text x="805" y="886" text-anchor="middle" fill="#475569" font-size="8">🔒 Bidirectional SSL VPN</text>
+  <text x="805" y="900" text-anchor="middle" fill="#64748b" font-size="6">疊在 V2 agents_v2 之上</text>
+
+  <!-- ═══ LEGEND ═══ -->
+  <rect x="760" y="10" width="230" height="170" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1" filter="url(#shadow)"/>
+  <text x="775" y="28" fill="#0f172a" font-size="9" font-weight="700">圖例</text>
+  <rect x="775" y="36" width="10" height="10" rx="2" fill="#ffffff" stroke="#10b981" stroke-width="1.5"/>
+  <text x="793" y="45" fill="#475569" font-size="7">Mobile App</text>
+  <rect x="775" y="52" width="10" height="10" rx="2" fill="#ffffff" stroke="#6366f1" stroke-width="1.5"/>
+  <text x="793" y="61" fill="#475569" font-size="7">Frontend / Desktop</text>
+  <rect x="775" y="68" width="10" height="10" rx="2" fill="#ffffff" stroke="#14b8a6" stroke-width="1.5"/>
+  <text x="793" y="77" fill="#475569" font-size="7">Backend / Service</text>
+  <rect x="775" y="84" width="10" height="10" rx="2" fill="#ffffff" stroke="#f97316" stroke-width="1.5"/>
+  <text x="793" y="93" fill="#475569" font-size="7">Event Engine</text>
+  <rect x="775" y="100" width="10" height="10" rx="2" fill="#ffffff" stroke="#8b5cf6" stroke-width="1"/>
+  <text x="793" y="109" fill="#475569" font-size="7">Database</text>
+  <rect x="775" y="116" width="10" height="10" rx="2" fill="#ffffff" stroke="#a855f7" stroke-width="1.5"/>
+  <text x="793" y="125" fill="#475569" font-size="7">LLM-Mesh</text>
+  <line x1="775" y1="136" x2="795" y2="136" stroke="#f43f5e" stroke-width="1.5"/>
+  <text x="800" y="139" fill="#475569" font-size="7">Constraint / Security</text>
+  <line x1="775" y1="149" x2="795" y2="149" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="800" y="152" fill="#475569" font-size="7">Dashboard API</text>
+  <line x1="775" y1="162" x2="795" y2="162" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,2"/>
+  <text x="800" y="165" fill="#475569" font-size="7">Data Flow</text>
+
+  <!-- Highlight: SSE Bifurcation -->
+  <line x1="490" y1="670" x2="490" y2="170" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.6"/>
+  <circle cx="490" cy="670" r="4" fill="#ef4444" opacity="0.8"/>
+  <circle cx="490" cy="170" r="4" fill="#ef4444" opacity="0.8"/>
+  <text x="500" y="430" fill="#ef4444" font-size="7" font-weight="600">SSE PUSH → Both Mobile & Desktop</text>
+</svg>
+</div>
+
+<!-- Summary Cards -->
+<div class="layers">
+  <div class="card">
+    <div class="card-header"><div class="card-dot green"></div><h3>Mobile</h3></div>
+    <ul>
+      <li>React Native Expo · 6 主要畫面 (Dashboard/庫存/簽核/AI/通知/設定)</li>
+      <li>Zustand + React Query · appStore.liveEvents 全域 SSE</li>
+      <li>SSE 即時推播 · JWT 統一認證 · 輕量級</li>
+      <li>X-Device Header 區分手機/桌機請求</li>
+    </ul>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-dot blue"></div><h3>Desktop</h3></div>
+    <ul>
+      <li>React + Vite + Tailwind · 7 角色儀表板 (17 Widgets)</li>
+      <li>War Room · i18n 雙語 · KPI 聚合 (36 指標)</li>
+      <li>LLM Chat · 即時事件流 · 互動關聯架構圖</li>
+      <li>TypeScript 零錯誤 · 淺色主題 #F0F4F8</li>
+    </ul>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-dot emerald"></div><h3>Backend</h3></div>
+    <ul>
+      <li>FastAPI + SQLAlchemy Async · 83 REST Endpoints · 37 Tools</li>
+      <li>7 領域模組 + 20 條業務約束檢查器</li>
+      <li>Event Bus → SSE Broadcaster (12 Events · Role Filter)</li>
+      <li>JWT + RBAC (7 Roles · 65 Permissions · Token Auth)</li>
+    </ul>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-dot purple"></div><h3>Mesh</h3></div>
+    <ul>
+      <li>3 站點 (Port 8001-8003) · CPU Qwen + Hermes Agent</li>
+      <li>Bidirectional SSL VPN · 疊在 V2 agents_v2 之上</li>
+      <li>分散式工廠 LLM 網路 · 跨廠同步</li>
+      <li>121 files · main branch</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══════ MOBILE SCREENS ═══════ -->
+<div class="mockup-section">
+  <h2>📱 LLM-Mobile 畫面一覽 (6 畫面) · 已建置完成 · 淺色主題 #F0F4F8</h2>
+  <div class="mockup-grid">
+
+    <!-- 1. Login -->
+    <div class="phone-frame">
+      <div class="phone-notch"><span class="time">13:45</span></div>
+      <div class="screen-content screen-login">
+        <div class="logo">LLM</div>
+        <div class="app-name">LLM-Mobile</div>
+        <div class="input-field">👤 使用者名稱</div>
+        <div class="input-field">🔒 密碼</div>
+        <div class="btn">登入</div>
+        <div class="server-info">伺服器: localhost:8000</div>
+      </div>
+    </div>
+
+    <!-- 2. Dashboard -->
+    <div class="phone-frame">
+      <div class="phone-notch"><span class="time">13:45</span></div>
+      <div class="screen-content screen-dash">
+        <div class="demo-banner">📢 預覽模式 — 資料為模擬資料</div>
+        <div class="kpi-row">
+          <div class="kpi-item"><div class="num">2</div><div class="lbl">在線工單</div></div>
+          <div class="kpi-item"><div class="num">12</div><div class="lbl">庫存品項</div></div>
+          <div class="kpi-item"><div class="num">NT$420K</div><div class="lbl">應收帳款</div></div>
+        </div>
+        <div class="qa-grid">
+          <div class="qa-btn"><div class="icon">📦</div><div class="label">庫存查詢</div></div>
+          <div class="qa-btn"><div class="icon">✅</div><div class="label">待核准</div></div>
+          <div class="qa-btn"><div class="icon">🏭</div><div class="label">跨廠監控</div></div>
+          <div class="qa-btn"><div class="icon">🤖</div><div class="label">AI 對話</div></div>
+        </div>
+        <div class="event-stream">
+          <div class="ev-header">📡 即時事件流</div>
+          <div class="ev-item"><span class="dot green"></span> PO DEMO-002 — NT$120K</div>
+          <div class="ev-item"><span class="dot red"></span> NC DEMO-001 — 尺寸超差</div>
+        </div>
+      </div>
+      <div class="bottom-nav">
+        <div class="nav-item active"><span class="icon">🏠</span><span class="label">主頁</span></div>
+        <div class="nav-item"><span class="icon">💬</span><span class="label">對話</span></div>
+        <div class="nav-item"><span class="icon">🏭</span><span class="label">監控</span></div>
+        <div class="nav-item"><span class="icon">🔔</span><span class="label">通知</span></div>
+        <div class="nav-item"><span class="icon">⚙️</span><span class="label">設定</span></div>
+      </div>
+    </div>
+
+    <!-- 3. Inventory -->
+    <div class="phone-frame">
+      <div class="phone-notch"><span class="time">13:45</span></div>
+      <div class="screen-content screen-inv">
+        <h4>📦 庫存查詢</h4>
+        <div class="search-bar">🔍 搜尋物料...</div>
+        <div class="inv-item"><div><span class="name">ASM-001 組件</span></div><span class="qty low">8 (低)</span></div>
+        <div class="inv-item"><div><span class="name">RAW-045 鋼板</span></div><span class="qty">150</span></div>
+        <div class="inv-item"><div><span class="name">FIN-023 外殼</span></div><span class="qty">32</span></div>
+        <div class="inv-item"><div><span class="name">CBL-012 線材</span></div><span class="qty">200</span></div>
+      </div>
+    </div>
+
+    <!-- 4. Approvals -->
+    <div class="phone-frame">
+      <div class="phone-notch"><span class="time">13:45</span></div>
+      <div class="screen-content screen-approx">
+        <h4>✅ 待核准 (3)</h4>
+        <div class="appr-item">
+          <div class="title">PO-2026-0042</div>
+          <div class="desc">大明金屬 · NT$120,000</div>
+          <div class="actions"><span class="btn-appr">✓ 核准</span><span class="btn-rej">✗ 駁回</span></div>
+        </div>
+        <div class="appr-item">
+          <div class="title">PO-2026-0043</div>
+          <div class="desc">永昌電子 · NT$85,000</div>
+          <div class="actions"><span class="btn-appr">✓ 核准</span><span class="btn-rej">✗ 駁回</span></div>
+        </div>
+        <div class="appr-item">
+          <div class="title">NC-DEMO-001</div>
+          <div class="desc">ASM-001 尺寸超差 [major]</div>
+          <div class="actions"><span class="btn-appr">✓ 特採</span><span class="btn-rej">✗ 退貨</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. AI Chat -->
+    <div class="phone-frame">
+      <div class="phone-notch"><span class="time">13:45</span></div>
+      <div class="screen-content screen-chat">
+        <h4>🤖 AI 對話</h4>
+        <div class="chat-msg"><div class="bubble">你好！我可以幫你查詢 ERP 資料</div></div>
+        <div class="chat-msg user"><div class="bubble">ASM-001 庫存多少？</div></div>
+        <div class="chat-msg"><div class="bubble">ASM-001 目前庫存 8 件，低於安全庫存 20。建議立即下單補貨。</div></div>
+        <div class="chat-input"><span class="field">輸入訊息...</span><span class="mic">🎤</span></div>
+      </div>
+    </div>
+
+    <!-- 6. Notifications -->
+    <div class="phone-frame">
+      <div class="phone-notch"><span class="time">13:45</span></div>
+      <div class="screen-content screen-notif">
+        <h4>🔔 通知中心</h4>
+        <div class="notif-item unread">
+          <div class="icon-circle" style="background:#d1fae5;">📦</div>
+          <div class="content"><div class="title">入庫 — RAW-045 已入庫 50 件</div><div class="time">2 分鐘前</div></div>
+        </div>
+        <div class="notif-item unread">
+          <div class="icon-circle" style="background:#fee2e2;">⚠️</div>
+          <div class="content"><div class="title">品質異常 — ASM-001 尺寸超差</div><div class="time">5 分鐘前</div></div>
+        </div>
+        <div class="notif-item">
+          <div class="icon-circle" style="background:#dbeafe;">✅</div>
+          <div class="content"><div class="title">PO-0042 已核准</div><div class="time">1 小時前</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- SSE Flow Verification -->
+<div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:12px; padding:16px; margin-top:20px; box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+  <h2 style="font-size:16px; font-weight:700; margin-bottom:10px;">⚡ 桌機一體同步流程驗證</h2>
+  <div style="font-size:12px; line-height:1.7; color:#334155;">
+    <p>1. <strong>桌機 War Room</strong> 點擊「模擬事件」→ REST API 觸發 EventBus</p>
+    <p>2. <strong>EventBus</strong> 發布事件 → <strong>Broadcaster</strong> 依角色過濾 → SSE 推播</p>
+    <p>3. <strong>手機 appStore.liveEvents</strong> 全域狀態更新 → Dashboard 即時顯示</p>
+    <p>4. <strong>桌機端</strong> 同時收到 → War Room 事件計數 1 → 2</p>
+    <p style="margin-top:8px; background:#f0fdf4; padding:8px; border-radius:6px;">
+      ✅ <strong>實際驗證通過（2026-05-12 13:34）</strong><br>
+      → 登入: admin/123456 → token + 65 permissions<br>
+      → SSE 連線: <code>{"role":"director","status":"connected"}</code><br>
+      → 事件: purchase_order.created + non_conformance.created 成功推播兩端
+    </p>
+  </div>
+</div>
+
+<div class="footer">
+  LLM-ERP V2 → LLM-Mobile · v2.0+mobile · 2026-05-12 · Built with FastAPI + React + React Native · Hermes Agent managed
+</div>
+<script>
+// ─── Bilingual Text Map (中英雙語映射) ──────────────────────────
+const ZH_MAP = {
+  // Layer labels
+  "MOBILE LAYER (React Native · Expo) — LLM-Mobile": "MOBILE LAYER (React Native · Expo) — LLM-Mobile",
+  "API GATEWAY (FastAPI · Port 8000)": "API GATEWAY (FastAPI · Port 8000)",
+  "FRONTEND LAYER (React + TypeScript + Vite) — Desktop": "FRONTEND LAYER (React + TypeScript + Vite) — Desktop",
+  "BACKEND LAYER (FastAPI + SQLAlchemy Async)": "BACKEND LAYER (FastAPI + SQLAlchemy Async)",
+  "EVENT ENGINE & NOTIFICATION LAYER": "EVENT ENGINE & NOTIFICATION LAYER",
+  "DATA LAYER (SQLAlchemy ORM + Audit)": "DATA LAYER (SQLAlchemy ORM + Audit)",
+  "LLM-MESH NETWORK (Distributed Factories · CPU Qwen · SSL VPN)": "LLM-MESH NETWORK (Distributed Factories · CPU Qwen · SSL VPN)",
+  
+  // Mobile
+  "📱 Mobile": "📱 Mobile",
+  "Dashboard / Chat": "Dashboard / Chat",
+  "Inventory Query": "Inventory Query",
+  "Approvals": "Approvals",
+  "Mesh Monitor": "Mesh Monitor",
+  "AI Chat": "AI Chat",
+  "Notifications": "Notifications",
+  "Profile": "Profile",
+  
+  // API Gateway
+  "🔗 REST API (83 Endpoints)": "🔗 REST API (83 Endpoints)",
+  "CRUD · 7 Domains · X-Device Header": "CRUD · 7 Domains · X-Device Header",
+  "📡 SSE Event Stream": "📡 SSE Event Stream",
+  "12 Events · Role Filter · Real-time": "12 Events · Role Filter · Real-time",
+  "🔐 JWT Auth + RBAC": "🔐 JWT Auth + RBAC",
+  "7 Roles · 65 Permissions · Token Auth": "7 Roles · 65 Permissions · Token Auth",
+  
+  // Desktop Frontend
+  "🏭 War Room": "🏭 War Room",
+  "7 Roles · 17 Widgets": "7 Roles · 17 Widgets",
+  "💬 LLM Chat": "💬 LLM Chat",
+  "DeepSeek / Ollama": "DeepSeek / Ollama",
+  "📊 關聯架構圖": "📊 Interactive Diagram",
+  "8 Nodes · Clickable": "8 Nodes · Clickable",
+  "🌐 中 / EN": "🌐 中 / EN",
+  "i18n 雙語": "i18n Bilingual",
+  "📡 事件流": "📡 Event Stream",
+  "KPI / Alert / Events": "KPI / Alert / Events",
+  "📈 KPI 聚合": "📈 KPI Aggregation",
+  "36 指標": "36 Metrics",
+  "⚠️ Alert Bar": "⚠️ Alert Bar",
+  "DB 掃描": "DB Scan",
+  "🔔 通知": "🔔 Notifications",
+  "即時推播": "Real-time Push",
+  
+  // Backend Services
+  "📦 庫存": "📦 Inventory",
+  "Parts · Stock": "Parts · Stock",
+  "4 constraints": "4 constraints",
+  "📋 採購": "📋 Purchase",
+  "Suppliers · POs": "Suppliers · POs",
+  "📐 BOM": "📐 BOM",
+  "BOM Tree": "BOM Tree",
+  "2 constraints": "2 constraints",
+  "⚙️ 派工": "⚙️ Dispatch",
+  "WOs · Schedules": "WOs · Schedules",
+  "3 constraints": "3 constraints",
+  "✅ 品質": "✅ Quality",
+  "Insp · NC · CAPA": "Insp · NC · CAPA",
+  "💰 會計": "💰 Accounting",
+  "Journals · AR/AP": "Journals · AR/AP",
+  "📊 Dashboard KPI / Alert 聚合 API": "📊 Dashboard KPI / Alert API",
+  "跨 7 模組 · 即時 DB 查詢": "Across 7 Modules · Real-time DB",
+  "🔒 約束檢查器": "🔒 Constraint Checker",
+  "20 Business Rules · 6 Domains": "20 Business Rules · 6 Domains",
+  "💬 LLM Chat API": "💬 LLM Chat API",
+  "Intent → Domain Agent": "Intent → Domain Agent",
+  "🔐 Auth API": "🔐 Auth API",
+  "Login · RBAC": "Login · RBAC",
+  
+  // Event Engine
+  "⚡ Event Bus (Pub/Sub)": "⚡ Event Bus (Pub/Sub)",
+  "12 Domain Events · Broadcast → SSE": "12 Domain Events · Broadcast → SSE",
+  "🔔 SSE Broadcaster": "🔔 SSE Broadcaster",
+  "Role-based Filter · Mobile + Desktop": "Role-based Filter · Mobile + Desktop",
+  "👤 通知路由": "👤 Notification Router",
+  "7 Roles · Event → Role Mapping": "7 Roles · Event → Role Mapping",
+  
+  // Data tables
+  "📦 Inventory": "📦 Inventory",
+  "parts / inventory": "parts / inventory",
+  "inv_transactions": "inv_transactions",
+  "audit_logs": "audit_logs",
+  "📋 Purchase": "📋 Purchase",
+  "suppliers": "suppliers",
+  "purchase_orders": "purchase_orders",
+  "po_items": "po_items",
+  "📐 BOM": "📐 BOM",
+  "products": "products",
+  "bom_items": "bom_items",
+  "⚙️ Dispatch": "⚙️ Dispatch",
+  "work_centers": "work_centers",
+  "prod_orders / ops": "prod_orders / ops",
+  "dispatch_logs": "dispatch_logs",
+  "✅ Quality": "✅ Quality",
+  "inspection_orders": "inspection_orders",
+  "non_conformances": "non_conformances",
+  "capa_records": "capa_records",
+  "💰 Accounting": "💰 Accounting",
+  "accounts / journal_entries": "accounts / journal_entries",
+  "journal_lines / ar": "journal_lines / ar",
+  "month_end_closes": "month_end_closes",
+  
+  // Data bottom bar
+  "SQLAlchemy ORM · SQLite (dev) / PostgreSQL (prod) · 34 Tables · Audit Logs": "SQLAlchemy ORM · SQLite (dev) / PostgreSQL (prod) · 34 Tables · Audit Logs",
+  
+  // Mesh
+  "🏭 Site A :8001": "🏭 Site A :8001",
+  "Qwen + Hermes Agent": "Qwen + Hermes Agent",
+  "🏭 Site B :8002": "🏭 Site B :8002",
+  "🏭 Site C :8003": "🏭 Site C :8003",
+  "🔒 Bidirectional SSL VPN": "🔒 Bidirectional SSL VPN",
+  "疊在 V2 agents_v2 之上": "Layered on V2 agents_v2",
+  
+  // Legend
+  "圖例": "Legend",
+  "Mobile App": "Mobile App",
+  "Frontend / Desktop": "Frontend / Desktop",
+  "Backend / Service": "Backend / Service",
+  "Event Engine": "Event Engine",
+  "Database": "Database",
+  "LLM-Mesh": "LLM-Mesh",
+  "Constraint / Security": "Constraint / Security",
+  "Dashboard API": "Dashboard API",
+  "Data Flow": "Data Flow",
+  
+  // SSE note
+  "SSE PUSH → Both Mobile & Desktop": "SSE PUSH → Both Mobile & Desktop",
+  "🔥 SSE Push": "🔥 SSE Push",
+  "EventBus → Broadcaster → Role Filter → Mobile + Desktop 同時收到": "EventBus → Broadcaster → Role Filter → Mobile + Desktop receive simultaneously",
+  "即時": "Real-time",
+  "角色過濾": "Role Filter",
+  
+  // Summary cards
+  "Mobile": "Mobile",
+  "React Native Expo · 6 主要畫面": "React Native Expo · 6 Screens",
+  "Zustand + React Query · appStore.liveEvents 全域 SSE": "Zustand + React Query · Global SSE Events",
+  "SSE 即時推播 · JWT 統一認證 · 輕量級": "SSE Push · JWT Auth · Lightweight",
+  "X-Device Header 區分手機/桌機請求": "X-Device Header splits Mobile/Desktop",
+  "Desktop": "Desktop",
+  "React + Vite + Tailwind · 7 角色儀表板": "React + Vite + Tailwind · 7 Role Dashboards",
+  "War Room · i18n 雙語 · KPI 聚合": "War Room · i18n Bilingual · KPI Aggregation",
+  "LLM Chat · 即時事件流 · 互動關聯架構圖": "LLM Chat · Event Stream · Interactive Diagram",
+  "TypeScript 零錯誤 · 淺色主題": "TypeScript Zero Errors · Light Theme",
+  "Backend": "Backend",
+  "FastAPI + SQLAlchemy Async · 83 REST Endpoints · 37 Tools": "FastAPI + SQLAlchemy Async · 83 REST Endpoints · 37 Tools",
+  "7 領域模組 + 20 條業務約束檢查器": "7 Domain Modules + 20 Business Constraints",
+  "Event Bus → SSE Broadcaster (12 Events · Role Filter)": "Event Bus → SSE Broadcaster (12 Events · Role Filter)",
+  "JWT + RBAC (7 Roles · 65 Permissions · Token Auth)": "JWT + RBAC (7 Roles · 65 Permissions · Token Auth)",
+  "Mesh": "Mesh",
+  "3 站點 (Port 8001-8003) · CPU Qwen + Hermes Agent": "3 Sites (Port 8001-8003) · CPU Qwen + Hermes Agent",
+  "Bidirectional SSL VPN · 疊在 V2 agents_v2 之上": "Bidirectional SSL VPN · On V2 agents_v2",
+  "分散式工廠 LLM 網路 · 跨廠同步": "Distributed Factory LLM Network · Cross-site Sync",
+  "121 files · main branch": "121 files · main branch",
+  
+  // Mockup section
+  "📱 LLM-Mobile 畫面一覽": "📱 LLM-Mobile Screens",
+  "6 畫面 · 已建置完成 · 淺色主題": "6 Screens · Built · Light Theme #F0F4F8",
+  "使用者名稱": "Username",
+  "密碼": "Password",
+  "登入": "Login",
+  "伺服器": "Server",
+  "📢 預覽模式 — 資料為模擬資料": "📢 Preview Mode — Demo Data",
+  "在線工單": "Active Orders",
+  "庫存品項": "Items",
+  "應收帳款": "AR Balance",
+  "庫存查詢": "Inventory",
+  "待核准": "Approvals",
+  "跨廠監控": "Sites",
+  "AI 對話": "AI Chat",
+  "📡 即時事件流": "📡 Live Events",
+  "主頁": "Home",
+  "對話": "Chat",
+  "監控": "Monitor",
+  "通知": "Alerts",
+  "設定": "Settings",
+  "📦 庫存查詢": "📦 Inventory Query",
+  "搜尋物料...": "Search parts...",
+  "✅ 待核准": "✅ Pending Approvals",
+  "核准": "Approve",
+  "駁回": "Reject",
+  "🤖 AI 對話": "🤖 AI Chat",
+  "輸入訊息...": "Type a message...",
+  "🔔 通知中心": "🔔 Notification Center",
+  "入庫 — RAW-045 已入庫 50 件": "Inbound — RAW-045 +50 qty",
+  "2 分鐘前": "2 min ago",
+  "品質異常 — ASM-001 尺寸超差": "Quality Issue — ASM-001 out of spec",
+  "5 分鐘前": "5 min ago",
+  "PO-0042 已核准": "PO-0042 Approved",
+  "1 小時前": "1 hour ago",
+  
+  // Verification section
+  "⚡ 桌機一體同步流程驗證": "⚡ Desktop-Mobile Sync Verification",
+  "點擊「模擬事件」→ REST API 觸發 EventBus": "Click 'Simulate' → REST API triggers EventBus",
+  "發布事件 → Broadcaster 依角色過濾 → SSE 推播": "Publishes event → Broadcaster role-filter → SSE push",
+  "手機 appStore.liveEvents 全域狀態更新 → Dashboard 即時顯示": "Mobile appStore.liveEvents updates → Dashboard renders",
+  "桌機端 同時收到 → War Room 事件計數 1 → 2": "Desktop receives simultaneously → Event count 1→2",
+  "實際驗證通過": "Verified ✅",
+  "登入: admin/123456 → token + 65 permissions": "Login: admin/123456 → token + 65 permissions",
+  "SSE 連線": "SSE Connection",
+  "成功推播兩端": "Pushed to both ends successfully",
+  
+  // Footer
+  "Built with FastAPI + React + React Native · Hermes Agent managed": "Built with FastAPI + React + React Native · Hermes Agent managed",
+};
+
+// ─── English to Chinese reverse map ─────────────────────────────
+const EN_MAP = {};
+for (const [zh, en] of Object.entries(ZH_MAP)) {
+  EN_MAP[en] = zh;
+}
+
+let currentLang = 'zh';
+
+function switchLang(lang) {
+  currentLang = lang;
+  const map = lang === 'zh' ? EN_MAP : ZH_MAP;
+  const fromLang = lang === 'zh' ? 'en' : 'zh';
+  
+  // Toggle button styles
+  document.getElementById('btn-zh').style.background = lang === 'zh' ? '#0D9488' : 'transparent';
+  document.getElementById('btn-zh').style.color = lang === 'zh' ? 'white' : '#64748b';
+  document.getElementById('btn-en').style.background = lang === 'en' ? '#0D9488' : 'transparent';
+  document.getElementById('btn-en').style.color = lang === 'en' ? 'white' : '#64748b';
+  
+  // Walk all text nodes in the document
+  const walker = document.createTreeWalker(
+    document.body, NodeFilter.SHOW_TEXT, null, false
+  );
+  let node;
+  while (node = walker.nextNode()) {
+    let text = node.nodeValue;
+    let changed = false;
+    for (const [from, to] of Object.entries(map)) {
+      if (text.includes(from)) {
+        text = text.replaceAll(from, to);
+        changed = true;
+      }
+    }
+    if (changed) {
+      node.nodeValue = text;
+    }
+  }
+  
+  // Update data-lang attributes
+  document.querySelectorAll('[data-lang-zh][data-lang-en]').forEach(el => {
+    el.textContent = el.getAttribute('data-lang-' + lang);
+  });
+}
+
+// Init: set default language
+document.addEventListener('DOMContentLoaded', () => switchLang('zh'));
+</script>
+</body>
+</html>
