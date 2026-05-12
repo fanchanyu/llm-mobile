@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LLM-Mobile - Documentation</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif;background:#F0F4F8;color:#1e293b;display:flex;justify-content:center;padding:40px 20px}
+.container{max-width:800px;width:100%}
+h1{font-size:24px;font-weight:800;margin-bottom:4px;color:#0f172a}
+.sub{color:#64748b;font-size:13px;margin-bottom:24px}
+.card{background:white;border-radius:12px;padding:16px 20px;margin-bottom:12px;border:1px solid #e2e8f0;transition:box-shadow .2s}
+.card:hover{box-shadow:0 4px 12px rgba(0,0,0,0.06)}
+.card h2{font-size:15px;font-weight:600;margin-bottom:6px}
+.card p{font-size:12px;color:#64748b;margin-bottom:8px}
+.links{display:flex;gap:8px;flex-wrap:wrap}
+.links a{padding:5px 12px;border-radius:6px;font-size:11px;font-weight:500;text-decoration:none;transition:all .2s}
+a.html{background:#dbeafe;color:#1d4ed8}
+a.html:hover{background:#bfdbfe}
+a.pdf{background:#fee2e2;color:#dc2626}
+a.pdf:hover{background:#fecaca}
+a.md{background:#f1f5f9;color:#475569}
+a.md:hover{background:#e2e8f0}
+.footer{text-align:center;font-size:10px;color:#94a3b8;margin-top:24px;padding-top:16px;border-top:1px solid #e2e8f0}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>📱 LLM-Mobile</h1>
+<p class="sub">LLM-ERP V2 Mobile Client · Desktop-Mobile Real-Time Sync</p>
+
+<div class="card">
+<h2>🏗️ 系統架構拓樸圖 / System Architecture</h2>
+<p>6 層架構 (Mobile→API→Desktop→Backend→Data→Mesh) · 中英一鍵切換</p>
+<div class="links">
+<a class="html" href="llm-mobile-architecture.html">📄 View HTML</a>
+<a class="pdf" href="docs/LLM-Mobile-Architecture-Topology.pdf">📕 Download PDF</a>
+</div>
+</div>
+
+<div class="card">
+<h2>📊 資料表關聯拓樸圖 / Database Relationship Topology</h2>
+<p>43 Tables · 11 Domains · 57 FK · 中英一鍵切換</p>
+<div class="links">
+<a class="html" href="form-topology.html">📄 View HTML</a>
+<a class="pdf" href="docs/LLM-Mobile-Form-Topology.pdf">📕 Download PDF</a>
+</div>
+</div>
+
+<div class="card">
+<h2>📖 安裝操作手冊 / Installation Guide</h2>
+<p>完整安裝步驟與操作說明</p>
+<div class="links">
+<a class="pdf" href="docs/LLM-Mobile-Installation-Guide-CN.pdf">📕 中文 PDF</a>
+<a class="pdf" href="docs/LLM-Mobile-Installation-Guide-EN.pdf">📕 English PDF</a>
+<a class="md" href="docs/installation-guide-zh.md">📝 中文 Markdown</a>
+<a class="md" href="docs/installation-guide-en.md">📝 English Markdown</a>
+</div>
+</div>
+
+<div class="card">
+<h2>📋 README</h2>
+<p>專案概述與快速開始</p>
+<div class="links">
+<a class="md" href="README.md">📝 README.md</a>
+</div>
+</div>
+
+<div class="footer">
+LLM-Mobile v2.0+mobile · <a href="https://github.com/fanchanyu/llm-mobile" style="color:#6366f1;text-decoration:none">GitHub</a>
+</div>
+</div>
+</body>
+</html>

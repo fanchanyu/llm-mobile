@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LLM-ERP V2 · Database Table Relationship Topology</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#F0F4F8;font-family:'Inter',sans-serif;display:flex;justify-content:center;padding:20px}
+.container{background:white;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,0.08);padding:24px;max-width:1500px;width:100%}
+.header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;flex-wrap:wrap;gap:12px}
+.title-group h1{font-size:20px;font-weight:700;color:#1e293b;line-height:1.3}
+.title-group .subtitle{font-size:13px;color:#64748b;margin-top:4px}
+.controls{display:flex;align-items:center;gap:12px}
+.controls label{font-size:13px;font-weight:500;color:#475569}
+.toggle-btn{display:flex;border:2px solid #cbd5e1;border-radius:8px;overflow:hidden;cursor:pointer;background:#f8fafc;transition:border-color .2s}
+.toggle-btn:hover{border-color:#94a3b8}
+.toggle-btn .opt{padding:6px 16px;font-size:13px;font-weight:500;color:#64748b;background:transparent;transition:all .2s;user-select:none;font-family:'Inter',sans-serif;border:none;cursor:pointer}
+.toggle-btn .opt.active{background:#0D9488;color:white}
+.toggle-btn .opt:not(.active):hover{background:#e2e8f0}
+#diagram-svg{width:100%;height:auto;border:1px solid #e2e8f0;border-radius:12px;display:block}
+.legend{display:flex;gap:20px;flex-wrap:wrap;margin-top:12px;padding:12px 16px;background:#f8fafc;border-radius:8px;font-size:12px;color:#475569}
+.legend-item{display:flex;align-items:center;gap:6px}
+.legend-line{width:28px;height:3px;border-radius:2px}
+.legend-line.dashed{background:transparent;border-top:3px dashed #94a3b8;height:0}
+.legend-line.solid{background:#64748b}
+.legend-line.fk-teal{background:#0D9488}
+.legend-line.fk-orange{background:#f59e0b}
+.legend-line.fk-blue{background:#3b82f6}
+.legend-line.fk-green{background:#22c55e}
+.legend-line.fk-purple{background:#8b5cf6}
+.legend-line.fk-cyan{background:#06b6d4}
+.legend-line.fk-red{background:#ef4444}
+.legend-line.fk-pink{background:#ec4899}
+.legend-line.fk-amber{background:#f59e0b}
+.legend-line.fk-gray{background:#6b7280}
+.legend-line.fk-yellow{background:#eab308}
+@media(max-width:768px){.container{padding:12px}.title-group h1{font-size:16px}}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header">
+<div class="title-group">
+<h1><span data-key="title">LLM-ERP V2 · Database Table Relationship Topology</span></h1>
+<div class="subtitle"><span data-key="subtitle">43 Tables · 11 Domains · 71 Foreign Keys</span></div>
+</div>
+<div class="controls">
+<label><span data-key="lang_label">Language / 語言</span></label>
+<div class="toggle-btn" id="langToggle" role="button" tabindex="0">
+<button class="opt active" data-lang="en">EN</button>
+<button class="opt" data-lang="zh">中文</button>
+</div>
+</div>
+</div>
+<svg id="diagram-svg" viewBox="0 0 1440 1300" xmlns="http://www.w3.org/2000/svg" style="background:#F0F4F8;border-radius:12px;overflow:visible">
+<defs>
+<filter id="shadow" x="-4" y="-4" width="8" height="8"><feDropShadow dx="0" dy="1" stdDeviation="2" flood-opacity="0.10"/></filter>
+<filter id="shadowTable" x="-2" y="-2" width="4" height="4"><feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-opacity="0.12"/></filter>
+<marker id="arrow-teal" markerWidth="10" markerHeight="8" refX="10" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 L2,4 Z" fill="#0D9488"/></marker>
+<marker id="arrow-orange" markerWidth="10" markerHeight="8" refX="10" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 L2,4 Z" fill="#f59e0b"/></marker>
+<marker id="arrow-blue" markerWidth="10" markerHeight="8" refX="10" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 L2,4 Z" fill="#3b82f6"/></marker>
+<marker id="arrow-green" markerWidth="10" markerHeight="8" refX="10" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 L2,4 Z" fill="#22c55e"/></marker>
+<marker id="arrow-purple" markerWidth="10" markerHeight="8" refX="10" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 L2,4 Z" fill="#8b5cf6"/></marker>
+<marker id="arrow-cyan" markerWidth="10" markerHeight="8" refX="10" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 L2,4 Z" fill="#06b6d4"/></marker>
+<marker id="arrow-red" markerWidth="10" markerHeight="8" refX="10" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 L2,4 Z" fill="#ef4444"/></marker>
+<marker id="arrow-pink" markerWidth="10" markerHeight="8" refX="10" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 L2,4 Z" fill="#ec4899"/></marker>
+<marker id="arrow-amber" markerWidth="10" markerHeight="8" refX="10" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 L2,4 Z" fill="#d97706"/></marker>
+<marker id="arrow-gray" markerWidth="10" markerHeight="8" refX="10" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 L2,4 Z" fill="#6b7280"/></marker>
+<marker id="arrow-yellow" markerWidth="10" markerHeight="8" refX="10" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 L2,4 Z" fill="#ca8a04"/></marker>
+<marker id="arrow-dashed" markerWidth="10" markerHeight="8" refX="10" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 L2,4 Z" fill="#94a3b8"/></marker>
+</defs>
+<g id="svg-content"></g>
+</svg>
+<div class="legend">
+<div class="legend-item"><div class="legend-line solid" style="background:#64748b"></div><span data-key="legend.fk">Foreign Key</span></div>
+<div class="legend-item"><div class="legend-line dashed"></div><span data-key="legend.logical">Logical FK (cross-domain)</span></div>
+<div class="legend-item"><div class="legend-line solid" style="background:#0D9488"></div><span data-key="legend.org">Organization</span></div>
+<div class="legend-item"><div class="legend-line solid" style="background:#f59e0b"></div><span data-key="legend.approval">Approval</span></div>
+<div class="legend-item"><div class="legend-line solid" style="background:#3b82f6"></div><span data-key="legend.crm">CRM</span></div>
+<div class="legend-item"><div class="legend-line solid" style="background:#22c55e"></div><span data-key="legend.inventory">Inventory</span></div>
+<div class="legend-item"><div class="legend-line solid" style="background:#ca8a04"></div><span data-key="legend.purchase">Purchase</span></div>
+<div class="legend-item"><div class="legend-line solid" style="background:#8b5cf6"></div><span data-key="legend.bom">BOM</span></div>
+<div class="legend-item"><div class="legend-line solid" style="background:#ec4899"></div><span data-key="legend.dispatch">Dispatch</span></div>
+<div class="legend-item"><div class="legend-line solid" style="background:#ef4444"></div><span data-key="legend.quality">Quality</span></div>
+<div class="legend-item"><div class="legend-line solid" style="background:#06b6d4"></div><span data-key="legend.accounting">Accounting</span></div>
+<div class="legend-item"><div class="legend-line solid" style="background:#d97706"></div><span data-key="legend.wms">WMS</span></div>
+<div class="legend-item"><div class="legend-line solid" style="background:#6b7280"></div><span data-key="legend.governance">Governance</span></div>
+</div>
+</div>
+<script>
+// ── Translations ──────────────────────────────────────────────────
+const T = {
+  en: {
+    title:'LLM-ERP V2 · Database Table Relationship Topology',
+    subtitle:'43 Tables · 11 Domains · 71 Foreign Keys',
+    lang_label:'Language / 語言',
+    'legend.fk':'Foreign Key','legend.logical':'Logical FK (cross-domain)',
+    'legend.org':'Organization','legend.approval':'Approval','legend.crm':'CRM',
+    'legend.inventory':'Inventory','legend.purchase':'Purchase','legend.bom':'BOM',
+    'legend.dispatch':'Dispatch','legend.quality':'Quality','legend.accounting':'Accounting',
+    'legend.wms':'WMS','legend.governance':'Governance',
+    // Domain headers
+    'd.org':'Organization','d.approval':'Approval','d.crm':'CRM',
+    'd.inv':'Inventory','d.pur':'Purchase','d.bom':'BOM',
+    'd.dispatch':'Dispatch','d.quality':'Quality','d.acc':'Accounting',
+    'd.wms':'WMS','d.gov':'Governance',
+    // Table names
+    't.departments':'departments','t.employees':'employees','t.users':'users',
+    't.roles':'roles','t.role_permissions':'role_permissions','t.employee_roles':'employee_roles',
+    't.approval_flows':'approval_flows','t.approval_requests':'approval_requests','t.approval_records':'approval_records',
+    't.customers':'customers','t.leads':'leads','t.opportunities':'opportunities',
+    't.contracts':'contracts','t.contract_pricing':'contract_pricing','t.sales_orders':'sales_orders',
+    't.sales_order_items':'sales_order_items','t.crm_events':'crm_events','t.conversation_logs':'conversation_logs',
+    't.parts':'parts','t.inventory':'inventory','t.inventory_transactions':'inventory_transactions',
+    't.suppliers':'suppliers','t.purchase_orders':'purchase_orders','t.purchase_order_items':'purchase_order_items',
+    't.products':'products','t.bom_items':'bom_items','t.production_orders':'production_orders',
+    't.work_centers':'work_centers','t.operations':'operations','t.dispatch_logs':'dispatch_logs',
+    't.inspection_orders':'inspection_orders','t.inspection_results':'inspection_results',
+    't.non_conformances':'non_conformances','t.capa_records':'capa_records',
+    't.accounts':'accounts','t.journal_entries':'journal_entries','t.journal_lines':'journal_lines',
+    't.accounts_receivable':'accounts_receivable','t.month_end_closes':'month_end_closes',
+    't.warehouse_zones':'warehouse_zones','t.bin_locations':'bin_locations',
+    't.inventory_transfers':'inventory_transfers','t.pick_tasks':'pick_tasks','t.cycle_counts':'cycle_counts',
+    't.audit_logs':'audit_logs','t.decision_logs':'decision_logs',
+    't.after_action_reviews':'after_action_reviews','t.factory_config':'factory_config',
+    // Field PK/FK labels
+    'pk':'PK','fk':'FK','logical':'logical'
+  },
+  zh: {
+    title:'LLM-ERP V2 · 資料表關聯拓樸圖',
+    subtitle:'43 個資料表 · 11 個領域 · 71 個外鍵',
+    lang_label:'語言 / Language',
+    'legend.fk':'外鍵','legend.logical':'邏輯外鍵（跨領域）',
+    'legend.org':'組織管理','legend.approval':'簽核流程','legend.crm':'客戶關係',
+    'legend.inventory':'庫存','legend.purchase':'採購','legend.bom':'物料清單',
+    'legend.dispatch':'派工','legend.quality':'品質','legend.accounting':'會計',
+    'legend.wms':'倉儲','legend.governance':'治理',
+    'd.org':'組織管理','d.approval':'簽核流程','d.crm':'客戶關係',
+    'd.inv':'庫存','d.pur':'採購','d.bom':'物料清單',
+    'd.dispatch':'派工','d.quality':'品質','d.acc':'會計',
+    'd.wms':'倉儲','d.gov':'治理',
+    't.departments':'部門','t.employees':'員工','t.users':'用戶',
+    't.roles':'角色','t.role_permissions':'角色權限','t.employee_roles':'員工角色',
+    't.approval_flows':'簽核流程定義','t.approval_requests':'簽核申請','t.approval_records':'簽核記錄',
+    't.customers':'客戶','t.leads':'潛在客戶','t.opportunities':'商機',
+    't.contracts':'合約','t.contract_pricing':'合約定價','t.sales_orders':'銷售訂單',
+    't.sales_order_items':'銷售訂單明細','t.crm_events':'CRM事件','t.conversation_logs':'對話記錄',
+    't.parts':'料件','t.inventory':'庫存','t.inventory_transactions':'庫存交易',
+    't.suppliers':'供應商','t.purchase_orders':'採購單','t.purchase_order_items':'採購單明細',
+    't.products':'產品','t.bom_items':'BOM明細','t.production_orders':'生產工單',
+    't.work_centers':'工作中心','t.operations':'工序','t.dispatch_logs':'派工記錄',
+    't.inspection_orders':'檢驗單','t.inspection_results':'檢驗結果',
+    't.non_conformances':'不符合項','t.capa_records':'矯正預防措施',
+    't.accounts':'會計科目','t.journal_entries':'分錄','t.journal_lines':'分錄明細',
+    't.accounts_receivable':'應收帳款','t.month_end_closes':'月底結算',
+    't.warehouse_zones':'倉庫區域','t.bin_locations':'儲位',
+    't.inventory_transfers':'庫存調撥','t.pick_tasks':'揀貨任務','t.cycle_counts':'循環盤點',
+    't.audit_logs':'審計日誌','t.decision_logs':'決策日誌',
+    't.after_action_reviews':'事後評估','t.factory_config':'工廠配置',
+    'pk':'主鍵','fk':'外鍵','logical':'邏輯'
+  }
+};
+
+// ── Data ──────────────────────────────────────────────────────────
+const DOMAIN_COLORS = {
+  org:'#0D9488', approval:'#f59e0b', crm:'#3b82f6',
+  inv:'#22c55e', pur:'#ca8a04', bom:'#8b5cf6',
+  dispatch:'#ec4899', quality:'#ef4444', acc:'#06b6d4',
+  wms:'#d97706', gov:'#6b7280'
+};
+const DOMAIN_BG = {
+  org:'rgba(13,148,136,0.06)', approval:'rgba(245,158,11,0.06)', crm:'rgba(59,130,246,0.06)',
+  inv:'rgba(34,197,94,0.06)', pur:'rgba(202,138,4,0.06)', bom:'rgba(139,92,246,0.06)',
+  dispatch:'rgba(236,72,153,0.06)', quality:'rgba(239,68,68,0.06)', acc:'rgba(6,182,212,0.06)',
+  wms:'rgba(217,119,6,0.06)', gov:'rgba(107,114,128,0.06)'
+};
+
+// Tables definition per domain
+// Each table: [id, x, y, w, h, fields...]
+// fields: [name, is_pk, is_fk, fk_target?]
+const DOMAINS = [
+{
+  id:'org', x:10, y:10, w:440, h:380,
+  tables:[
+    ['departments', 30, 42, 200, 120, ['code','name','parent_id→departments','manager_id→employees','level']],
+    ['employees', 240, 42, 200, 100, ['employee_no','name','department_id→departments','manager_id→employees']],
+    ['users', 30, 170, 200, 85, ['username','password_hash','employee_id→employees']],
+    ['roles', 240, 152, 200, 85, ['name','code','level']],
+    ['role_permissions', 30, 268, 200, 85, ['role_id→roles','module','action','scope']],
+    ['employee_roles', 240, 250, 200, 120, ['employee_id→employees','role_id→roles','assigned_by→employees']]
+  ]
+},
+{
+  id:'approval', x:470, y:10, w:420, h:230,
+  tables:[
+    ['approval_flows', 480, 42, 200, 85, ['name','module','trigger_event','steps[JSON]']],
+    ['approval_requests', 690, 42, 190, 100, ['flow_id→approval_flows','request_type','request_ref_id','requester_id→employees']],
+    ['approval_records', 565, 155, 200, 85, ['request_id→approval_requests','step','approver_id→employees','action']]
+  ]
+},
+{
+  id:'crm', x:910, y:10, w:520, h:570,
+  tables:[
+    ['customers', 920, 42, 200, 110, ['customer_no','name','contact','credit_limit','level']],
+    ['leads', 1130, 42, 200, 110, ['company','contact','source','score','status','converted_to_customer_id→customers']],
+    ['opportunities', 1130, 162, 200, 100, ['lead_id→leads','customer_id→customers','name','amount','stage']],
+    ['contracts', 920, 162, 200, 110, ['customer_id→customers','type','start_date','end_date','pricing_json']],
+    ['conversation_logs', 920, 282, 200, 85, ['session_id','role','content','intent','customer_id→customers']],
+    ['contract_pricing', 1130, 278, 200, 85, ['contract_id→contracts','part_no','unit_price','min_qty']],
+    ['crm_events', 920, 378, 200, 70, ['customer_id→customers','event_type','description']],
+    ['sales_orders', 1130, 380, 200, 100, ['so_no','customer_id→customers','status','total_amount']],
+    ['sales_order_items', 1130, 490, 200, 70, ['so_id→sales_orders','part_no','quantity','unit_price']]
+  ]
+},
+{
+  id:'inv', x:10, y:410, w:420, h:220,
+  tables:[
+    ['parts', 20, 442, 200, 100, ['part_no','name','spec','unit','category']],
+    ['inventory', 230, 442, 190, 85, ['part_id→parts','location','quantity']],
+    ['inventory_transactions', 120, 545, 200, 70, ['part_id→parts','type','quantity','reference_no']]
+  ]
+},
+{
+  id:'pur', x:450, y:410, w:420, h:220,
+  tables:[
+    ['suppliers', 460, 442, 200, 100, ['name','contact','phone','email','score']],
+    ['purchase_orders', 670, 442, 190, 85, ['po_no','supplier_id→suppliers','status','ordered_by']],
+    ['purchase_order_items', 550, 545, 200, 85, ['po_id→purchase_orders','part_id→parts','quantity','unit_price','expected_delivery']]
+  ]
+},
+{
+  id:'bom', x:890, y:410, w:420, h:240,
+  tables:[
+    ['products', 900, 442, 200, 85, ['product_no','name','description']],
+    ['bom_items', 1110, 442, 190, 100, ['product_id→products','part_id→parts','quantity','level','sequence_no']],
+    ['production_orders', 970, 555, 200, 85, ['order_no','product_no','so_id→sales_orders','due_date','status','priority']]
+  ]
+},
+{
+  id:'dispatch', x:10, y:650, w:420, h:240,
+  tables:[
+    ['work_centers', 20, 682, 200, 100, ['name','status','capacity_hours','efficiency','alternate_group']],
+    ['operations', 240, 682, 190, 100, ['order_id→production_orders','work_center_id→work_centers','sequence_no','planned_hours']],
+    ['dispatch_logs', 120, 795, 200, 85, ['order_id','operation_id','from_wc','to_wc','reason','status']]
+  ]
+},
+{
+  id:'quality', x:450, y:650, w:420, h:300,
+  tables:[
+    ['inspection_orders', 460, 682, 200, 85, ['inspection_no','po_id→purchase_orders','part_id→parts','status']],
+    ['inspection_results', 670, 682, 190, 85, ['inspection_id→inspection_orders','item_no','spec_value','measured_value','result']],
+    ['non_conformances', 460, 780, 200, 100, ['nc_no','inspection_id→inspection_orders','part_id→parts','severity','status']],
+    ['capa_records', 670, 780, 190, 100, ['nc_id→non_conformances','root_cause','action','responsible','deadline','status']]
+  ]
+},
+{
+  id:'acc', x:890, y:650, w:540, h:300,
+  tables:[
+    ['accounts', 900, 682, 200, 85, ['account_no','name','type','normal_balance','is_active']],
+    ['journal_entries', 1110, 682, 200, 100, ['entry_no','description','entry_date','period','source_type','source_id']],
+    ['journal_lines', 900, 778, 200, 85, ['entry_id→journal_entries','account_id→accounts','debit','credit']],
+    ['accounts_receivable', 1110, 798, 200, 85, ['customer_name','invoice_no','amount','due_date','paid_amount','status']],
+    ['month_end_closes', 990, 880, 200, 70, ['period','closed_by','is_closed']]
+  ]
+},
+{
+  id:'wms', x:10, y:970, w:700, h:340,
+  tables:[
+    ['warehouse_zones', 20, 1002, 200, 85, ['code','name','zone_type','status']],
+    ['bin_locations', 240, 1002, 200, 100, ['code','zone_id→warehouse_zones','part_id→parts','max_capacity','current_qty']],
+    ['inventory_transfers', 240, 1115, 200, 130, ['transfer_no','part_id→parts','from_bin_id→bin_locations','to_bin_id→bin_locations','from_zone_id→warehouse_zones','to_zone_id→warehouse_zones']],
+    ['pick_tasks', 460, 1002, 200, 100, ['task_no','reference_type','reference_no','part_id→parts','from_bin_id→bin_locations','status']],
+    ['cycle_counts', 460, 1115, 200, 100, ['part_id→parts','bin_id→bin_locations','zone_id→warehouse_zones','counted_qty','system_qty']]
+  ]
+},
+{
+  id:'gov', x:730, y:970, w:700, h:340,
+  tables:[
+    ['audit_logs', 740, 1002, 200, 110, ['session_id','user_input','intent','action','params','result','success']],
+    ['decision_logs', 960, 1002, 200, 100, ['decision_type','description','department','actor','context_data[JSON]']],
+    ['after_action_reviews', 740, 1125, 200, 100, ['decision_log_id→decision_logs','title','department','expected_result','actual_result']],
+    ['factory_config', 960, 1125, 200, 100, ['factory_type','name','pipeline_stages','enabled_forms','cash_flow_rules']]
+  ]
+}
+];
+
+// Relationships [from_id, to_id, fk_name, color, dashed?]
+// color: domain color of the source or dest
+const RELS = [
+  // ── Organization internal ──
+  ['departments','departments','parent_id','#0D9488',false],
+  ['departments','employees','manager_id','#0D9488',false],
+  ['employees','departments','department_id','#0D9488',false],
+  ['employees','employees','manager_id','#0D9488',false],
+  ['users','employees','employee_id','#0D9488',false],
+  ['role_permissions','roles','role_id','#0D9488',false],
+  ['employee_roles','employees','employee_id','#0D9488',false],
+  ['employee_roles','roles','role_id','#0D9488',false],
+  ['employee_roles','employees','assigned_by','#0D9488',false],
+  // ── Approval ──
+  ['approval_requests','approval_flows','flow_id','#f59e0b',false],
+  ['approval_requests','employees','requester_id','#f59e0b',true],
+  ['approval_records','approval_requests','request_id','#f59e0b',false],
+  ['approval_records','employees','approver_id','#f59e0b',true],
+  // ── CRM ──
+  ['leads','customers','converted_to_customer_id','#3b82f6',false],
+  ['opportunities','leads','lead_id','#3b82f6',false],
+  ['opportunities','customers','customer_id','#3b82f6',false],
+  ['contracts','customers','customer_id','#3b82f6',false],
+  ['contract_pricing','contracts','contract_id','#3b82f6',false],
+  ['sales_orders','customers','customer_id','#3b82f6',false],
+  ['sales_order_items','sales_orders','so_id','#3b82f6',false],
+  ['crm_events','customers','customer_id','#3b82f6',false],
+  ['conversation_logs','customers','customer_id','#3b82f6',false],
+  // ── Inventory ──
+  ['inventory','parts','part_id','#22c55e',false],
+  ['inventory_transactions','parts','part_id','#22c55e',false],
+  // ── Purchase ──
+  ['purchase_orders','suppliers','supplier_id','#ca8a04',false],
+  ['purchase_order_items','purchase_orders','po_id','#ca8a04',false],
+  ['purchase_order_items','parts','part_id','#ca8a04',true],
+  // ── BOM ──
+  ['bom_items','products','product_id','#8b5cf6',false],
+  ['bom_items','parts','part_id','#8b5cf6',true],
+  ['production_orders','sales_orders','so_id','#8b5cf6',true],
+  // ── Dispatch ──
+  ['operations','production_orders','order_id','#ec4899',true],
+  ['operations','work_centers','work_center_id','#ec4899',false],
+  ['dispatch_logs','operations','operation_id','#ec4899',true],
+  ['dispatch_logs','production_orders','order_id','#ec4899',true],
+  ['dispatch_logs','work_centers','from_wc','#ec4899',true],
+  ['dispatch_logs','work_centers','to_wc','#ec4899',true],
+  // ── Quality ──
+  ['inspection_orders','purchase_orders','po_id','#ef4444',true],
+  ['inspection_orders','parts','part_id','#ef4444',true],
+  ['inspection_results','inspection_orders','inspection_id','#ef4444',false],
+  ['non_conformances','inspection_orders','inspection_id','#ef4444',false],
+  ['non_conformances','parts','part_id','#ef4444',true],
+  ['capa_records','non_conformances','nc_id','#ef4444',false],
+  // ── Accounting ──
+  ['journal_lines','journal_entries','entry_id','#06b6d4',false],
+  ['journal_lines','accounts','account_id','#06b6d4',false],
+  // ── WMS ──
+  ['bin_locations','warehouse_zones','zone_id','#d97706',false],
+  ['bin_locations','parts','part_id','#d97706',true],
+  ['inventory_transfers','parts','part_id','#d97706',false],
+  ['inventory_transfers','bin_locations','from_bin_id','#d97706',true],
+  ['inventory_transfers','bin_locations','to_bin_id','#d97706',true],
+  ['inventory_transfers','warehouse_zones','from_zone_id','#d97706',true],
+  ['inventory_transfers','warehouse_zones','to_zone_id','#d97706',true],
+  ['pick_tasks','parts','part_id','#d97706',true],
+  ['pick_tasks','bin_locations','from_bin_id','#d97706',true],
+  ['cycle_counts','parts','part_id','#d97706',true],
+  ['cycle_counts','bin_locations','bin_id','#d97706',true],
+  ['cycle_counts','warehouse_zones','zone_id','#d97706',true],
+  // ── Governance ──
+  ['after_action_reviews','decision_logs','decision_log_id','#6b7280',false]
+];
+
+// ── SVG Builder ──────────────────────────────────────────────────
+const SVG_NS = 'http://www.w3.org/2000/svg';
+const svg = document.getElementById('svg-content');
+const langToggle = document.getElementById('langToggle');
+let lang = 'en';
+
+// table position lookup: id -> {x,y,w,h}
+const tablePos = {};
+
+function parseField(f) {
+  const arrow = f.indexOf('→');
+  if (arrow === -1) return { name: f, fk: false, pk: false, target: null };
+  return { name: f.substring(0, arrow), fk: true, pk: false, target: f.substring(arrow+1) };
+}
+function isPK(fieldName, tableFields) {
+  // first field is typically PK
+  return tableFields[0] === fieldName || fieldName.indexOf('_no') > 0 || fieldName === 'id' || fieldName === 'code' || fieldName === 'username' || fieldName === 'account_no';
+}
+
+function buildDiagram() {
+  svg.innerHTML = '';
+  const ns = SVG_NS;
+  const langText = T[lang];
+
+  // Collect table positions
+  DOMAINS.forEach(d => {
+    d.tables.forEach(t => {
+      const id = t[0], x = t[1], y = t[2], w = t[3], h = t[4];
+      tablePos[id] = { x, y, w, h };
+    });
+  });
+
+  // ── Draw domain zones ──
+  DOMAINS.forEach(d => {
+    // compute zone bounding box from tables
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    d.tables.forEach(t => {
+      const tx = t[1], ty = t[2], tw = t[3], th = t[4];
+      if (tx < minX) minX = tx;
+      if (ty < minY) minY = ty;
+      if (tx + tw > maxX) maxX = tx + tw;
+      if (ty + th > maxY) maxY = ty + th;
+    });
+    const pad = 16;
+    minX -= pad; minY -= pad + 10; maxX += pad; maxY += pad;
+    const color = DOMAIN_COLORS[d.id];
+    // bg rect
+    const bg = document.createElementNS(ns, 'rect');
+    bg.setAttribute('x', minX); bg.setAttribute('y', minY);
+    bg.setAttribute('width', maxX - minX); bg.setAttribute('height', maxY - minY);
+    bg.setAttribute('rx', 12); bg.setAttribute('ry', 12);
+    bg.setAttribute('fill', DOMAIN_BG[d.id]);
+    bg.setAttribute('stroke', color); bg.setAttribute('stroke-width', '1.5');
+    bg.setAttribute('stroke-dasharray', '6,3');
+    svg.appendChild(bg);
+
+    // domain header
+    const hdr = document.createElementNS(ns, 'text');
+    hdr.setAttribute('x', minX + 14); hdr.setAttribute('y', minY + 18);
+    hdr.setAttribute('font-size', '13'); hdr.setAttribute('font-weight', '700');
+    hdr.setAttribute('fill', color);
+    hdr.setAttribute('font-family', 'Inter, sans-serif');
+    hdr.setAttribute('data-key', 'd.'+d.id);
+    hdr.textContent = langText['d.'+d.id];
+    svg.appendChild(hdr);
+  });
+
+  // ── Draw relationships (arrows) ──
+  RELS.forEach(r => {
+    const fromId = r[0], toId = r[1], fkName = r[2], color = r[3], dashed = r[4];
+    const from = tablePos[fromId], to = tablePos[toId];
+    if (!from || !to) return;
+
+    // compute connection points: from right edge to left edge (or best side)
+    let x1, y1, x2, y2;
+    if (from.x + from.w < to.x) {
+      // from right to left
+      x1 = from.x + from.w; y1 = from.y + from.h / 2;
+      x2 = to.x; y2 = to.y + to.h / 2;
+    } else if (to.x + to.w < from.x) {
+      x1 = from.x; y1 = from.y + from.h / 2;
+      x2 = to.x + to.w; y2 = to.y + to.h / 2;
+    } else if (from.y < to.y) {
+      x1 = from.x + from.w / 2; y1 = from.y + from.h;
+      x2 = to.x + to.w / 2; y2 = to.y;
+    } else {
+      x1 = from.x + from.w / 2; y1 = from.y;
+      x2 = to.x + to.w / 2; y2 = to.y + to.h;
+    }
+
+    // Add curve control points for self-references
+    let pathD;
+    let dx = 0, dy = 0; // declare here so FK labels can use them
+    if (fromId === toId) {
+      // self-loop: curve above the table
+      const cx = from.x + from.w / 2;
+      const cy = from.y - 20;
+      pathD = `M${from.x + from.w * 0.3},${from.y} C${from.x + from.w * 0.3},${cy} ${from.x + from.w * 0.7},${cy} ${from.x + from.w * 0.7},${from.y}`;
+    } else {
+      dx = x2 - x1; dy = y2 - y1;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      const cp = Math.min(dist * 0.4, 40);
+      pathD = `M${x1},${y1} C${x1 + cp * (dx>0?1:-1) * 0.3},${y1 + dy*0.1} ${x2 - cp * (dx>0?1:-1) * 0.3},${y2 - dy*0.1} ${x2},${y2}`;
+    }
+
+    const path = document.createElementNS(ns, 'path');
+    path.setAttribute('d', pathD);
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', color);
+    path.setAttribute('stroke-width', '1.5');
+    path.setAttribute('stroke-dasharray', dashed ? '5,4' : 'none');
+    // marker
+    const markerId = 'arrow-' + (dashed ? 'dashed' : color.replace('#',''));
+    const marker = document.getElementById(markerId);
+    if (marker) {
+      path.setAttribute('marker-end', 'url(#' + markerId + ')');
+    }
+    path.setAttribute('opacity', '0.7');
+    svg.appendChild(path);
+
+    // FK label on arrow
+    const midX = (x1 + x2) / 2 + (dx>0?10:-10);
+    const midY = (y1 + y2) / 2 - 8;
+    const label = document.createElementNS(ns, 'text');
+    label.setAttribute('x', midX); label.setAttribute('y', midY);
+    label.setAttribute('font-size', '8'); label.setAttribute('fill', color);
+    label.setAttribute('font-weight', '500');
+    label.setAttribute('font-family', 'Inter, sans-serif');
+    label.setAttribute('text-anchor', 'middle');
+    label.setAttribute('data-key', 'fk.'+fromId+'.'+fkName);
+    label.textContent = fkName;
+    // background for label
+    const bgL = document.createElementNS(ns, 'rect');
+    const bbox = label.getBBox ? null : {width: fkName.length*7 + 4, height:12};
+    bgL.setAttribute('x', midX - (fkName.length*3.5 + 2));
+    bgL.setAttribute('y', midY - 9);
+    bgL.setAttribute('width', fkName.length*7 + 4);
+    bgL.setAttribute('height', 12);
+    bgL.setAttribute('rx', 3);
+    bgL.setAttribute('fill', 'rgba(255,255,255,0.85)');
+    bgL.setAttribute('stroke', color); bgL.setAttribute('stroke-width', '0.5');
+    svg.appendChild(bgL);
+    svg.appendChild(label);
+  });
+
+  // ── Draw tables ──
+  DOMAINS.forEach(d => {
+    d.tables.forEach(t => {
+      const id = t[0], x = t[1], y = t[2], w = t[3], h = t[4];
+      const fields = t.slice(5);
+      const color = DOMAIN_COLORS[d.id];
+
+      // Table background
+      const rect = document.createElementNS(ns, 'rect');
+      rect.setAttribute('x', x); rect.setAttribute('y', y);
+      rect.setAttribute('width', w); rect.setAttribute('height', h);
+      rect.setAttribute('rx', 8); rect.setAttribute('ry', 8);
+      rect.setAttribute('fill', 'white');
+      rect.setAttribute('stroke', color); rect.setAttribute('stroke-width', '1.5');
+      rect.setAttribute('filter', 'url(#shadowTable)');
+      svg.appendChild(rect);
+
+      // Header bar
+      const hdrRect = document.createElementNS(ns, 'rect');
+      hdrRect.setAttribute('x', x); hdrRect.setAttribute('y', y);
+      hdrRect.setAttribute('width', w); hdrRect.setAttribute('height', 26);
+      hdrRect.setAttribute('rx', 8); hdrRect.setAttribute('ry', 8);
+      hdrRect.setAttribute('fill', color);
+      hdrRect.setAttribute('opacity', '0.15');
+      svg.appendChild(hdrRect);
+
+      // Table name (top corner)
+      const nameText = document.createElementNS(ns, 'text');
+      nameText.setAttribute('x', x + 8); nameText.setAttribute('y', y + 18);
+      nameText.setAttribute('font-size', '11'); nameText.setAttribute('font-weight', '600');
+      nameText.setAttribute('fill', '#1e293b');
+      nameText.setAttribute('font-family', 'Inter, sans-serif');
+      nameText.setAttribute('data-key', 't.'+id);
+      nameText.textContent = langText['t.'+id] || id;
+      svg.appendChild(nameText);
+
+      // PK icon
+      const pkIcon = document.createElementNS(ns, 'text');
+      pkIcon.setAttribute('x', x + w - 28); pkIcon.setAttribute('y', y + 18);
+      pkIcon.setAttribute('font-size', '8'); pkIcon.setAttribute('font-weight', '500');
+      pkIcon.setAttribute('fill', '#94a3b8');
+      pkIcon.setAttribute('font-family', 'Inter, sans-serif');
+      pkIcon.textContent = 'PK';
+      svg.appendChild(pkIcon);
+
+      // Fields
+      let fy = y + 36;
+      fields.forEach(f => {
+        const parsed = parseField(f);
+        const isFirstField = (fields.indexOf(f) === 0);
+        const pk = isFirstField;
+
+        const fieldText = document.createElementNS(ns, 'text');
+        fieldText.setAttribute('x', x + 8); fieldText.setAttribute('y', fy);
+        fieldText.setAttribute('font-size', '9.5'); fieldText.setAttribute('font-weight', pk ? '600' : '400');
+        fieldText.setAttribute('fill', pk ? '#1e293b' : '#475569');
+        fieldText.setAttribute('font-family', 'monospace');
+        fieldText.textContent = parsed.name;
+        svg.appendChild(fieldText);
+
+        if (parsed.fk) {
+          const fkText = document.createElementNS(ns, 'text');
+          fkText.setAttribute('x', x + w - 26); fkText.setAttribute('y', fy);
+          fkText.setAttribute('font-size', '7.5'); fkText.setAttribute('font-weight', '500');
+          fkText.setAttribute('fill', color);
+          fkText.setAttribute('font-family', 'Inter, sans-serif');
+          fkText.textContent = 'FK';
+          svg.appendChild(fkText);
+        }
+
+        fy += 17;
+      });
+    });
+  });
+
+  // ── Final: Title bar info ──
+  // update subtitle with actual FK count
+  const fkCount = RELS.length;
+  document.querySelector('[data-key="subtitle"]').textContent =
+    lang === 'en'
+      ? `43 Tables · 11 Domains · ${fkCount} Foreign Keys`
+      : `43 個資料表 · 11 個領域 · ${fkCount} 個外鍵`;
+
+  // rebuild all data-key text elements
+  document.querySelectorAll('[data-key]').forEach(el => {
+    const key = el.getAttribute('data-key');
+    if (langText[key]) {
+      el.textContent = langText[key];
+    }
+  });
+}
+
+// ── Language Toggle ──
+function setLang(l) {
+  lang = l;
+  document.querySelectorAll('.toggle-btn .opt').forEach(b => {
+    b.classList.toggle('active', b.dataset.lang === l);
+  });
+  buildDiagram();
+}
+
+langToggle.querySelectorAll('.opt').forEach(btn => {
+  btn.addEventListener('click', () => setLang(btn.dataset.lang));
+});
+
+buildDiagram();
+</script>
+</body>
+</html>
