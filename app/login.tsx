@@ -86,7 +86,8 @@ export default function LoginScreen() {
       <StatusBar style="dark" />
       <ScrollView
         contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
+        keyboardShouldPersistTaps="always"
+        keyboardDismissMode="on-drag"
       >
         {/* Logo / Title */}
         <View style={styles.header}>

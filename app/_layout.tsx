@@ -54,7 +54,7 @@ const LightTheme = {
 export { ErrorBoundary } from 'expo-router';
 
 export const unstable_settings = {
-  initialRouteName: '(tabs)',
+  initialRouteName: 'login',
 };
 
 // ─── App 級 SSE 監聽器 ─────────────────────
